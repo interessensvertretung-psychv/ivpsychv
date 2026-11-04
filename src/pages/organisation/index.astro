@@ -1,0 +1,79 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { url } from '../../lib/utils';
+
+const uebersicht = await getEntry('organisation', 'uebersicht');
+if (!uebersicht) throw new Error('src/content/organisation/uebersicht.md fehlt');
+const { Content } = await render(uebersicht);
+
+const unterseiten = (await getCollection('organisation'))
+  .filter((s) => s.data.sichtbar && s.id !== 'uebersicht')
+  .sort((a, b) => a.data.reihenfolge - b.data.reihenfolge);
+---
+
+<PageLayout titel={uebersicht.data.titel} beschreibung={uebersicht.data.beschreibung}>
+  <div class="prose">
+    <Content />
+  </div>
+
+  {
+    unterseiten.length > 0 && (
+      <ul class="org-grid">
+        {unterseiten.map((s) => (
+          <li>
+            <a class="org-card card" href={url(`/organisation/${s.id}/`)}>
+              <h2>{s.data.titel}</h2>
+              <p>{s.data.beschreibung}</p>
+              <span class="org-card__more">
+                Mehr lesen <Icon name="arrow-right" size={18} />
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</PageLayout>
+
+<style>
+  .org-grid {
+    list-style: none;
+    padding: 0;
+    margin: 2.5rem 0 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+  .org-card {
+    display: block;
+    height: 100%;
+    color: var(--text);
+    text-decoration: none;
+    transition:
+      border-color 250ms var(--ease),
+      transform 250ms var(--ease);
+  }
+  .org-card:hover {
+    border-color: var(--linie-rose);
+    transform: translateY(-3px);
+    color: var(--text);
+  }
+  .org-card h2 {
+    font-size: 1.35rem;
+    margin-bottom: 0.4em;
+  }
+  .org-card p {
+    color: var(--text-leise);
+    font-size: var(--fs-small);
+  }
+  .org-card__more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--akzent);
+    font-family: var(--font-heading);
+    font-weight: 600;
+  }
+</style>

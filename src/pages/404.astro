@@ -1,0 +1,8 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { url } from '../lib/utils';
+---
+
+<PageLayout titel="Seite nicht gefunden" beschreibung="Diese Seite gibt es leider nicht (mehr)." noindex>
+  <p><a class="btn btn--primary" href={url('/')}>Zur Startseite</a></p>
+</PageLayout>

@@ -1,0 +1,399 @@
+/* ============================================================
+   DESIGNSYSTEM – Interessensvertretung Psychosoziale Versorgung
+   Farben aus dem Logo. Zum Anpassen nur die Variablen ändern.
+   ============================================================ */
+
+/* Jost: Logo, Überschriften, Buttons, Menü (Logo-Ringschrift = Jost Medium).
+   Lexend: Fließtext – für leichtes Lesen entwickelt, geometrisch wie Jost. */
+@import '@fontsource/jost/400.css';
+@import '@fontsource/jost/500.css';
+@import '@fontsource/jost/600.css';
+@import '@fontsource/jost/700.css';
+@import '@fontsource/lexend/400.css';
+@import '@fontsource/lexend/700.css';
+
+:root {
+  /* Grundfarben – gemessen am Logo. Es gibt EIN Flächengrün (waldgruen)
+     mit genau zwei Stufen; schleifengruen ist nur Akzent.
+     Keine weiteren Grüntöne und keine halbtransparenten Grüns verwenden. */
+  --waldgruen-tief: #243325; /* Overlay hinter dem Menü */
+  --waldgruen: #304331; /* Logo-Ring – Boxen, Karussell, Footer */
+  --waldgruen-hell: #3b523c; /* Flächen innerhalb von Boxen, Logo-Schein */
+  --schleifengruen: #72a476; /* Logo-Schleife */
+  --rose: #f1c6c7; /* Logo-Kreis – Schrift in Boxen */
+  --altrose: #b96b6c; /* Schatten der Hände – nur Icons und Linien. Nie Hintergrund, nie Schrift. */
+  --papier: #fbf4f3; /* Seitengrund */
+  --weiss: #ffffff;
+
+  /* Rollen – Komponenten nutzen diese Namen.
+     Seite: Papier mit Waldgrün-Schrift; Altrosa nur für Icons und Linien. */
+  --flaeche: var(--papier);
+  --flaeche-erhoeht: var(--rose);
+  --flaeche-tief: var(--waldgruen);
+  --text: var(--waldgruen); /* 9,8:1 auf Papier */
+  --text-leise: #455846; /* 7,1:1 auf Papier */
+  --ueberschrift: var(--waldgruen);
+  --akzent: var(--waldgruen); /* Links, Primär-Button, Fokusring */
+  --auf-akzent: var(--papier); /* 9,8:1 auf waldgruen */
+  --icon: var(--altrose);
+  --linie: rgba(48, 67, 49, 0.18);
+  --linie-rose: var(--altrose);
+
+  --schatten: 0 30px 60px -20px rgba(20, 30, 21, 0.55), 0 12px 24px -12px rgba(20, 30, 21, 0.4);
+
+  /* Typografie */
+  --font-heading: 'Jost', system-ui, sans-serif;
+  --font-body: 'Lexend', system-ui, sans-serif;
+  --fs-body: clamp(1.0625rem, 0.98rem + 0.35vw, 1.25rem);
+  --fs-small: 0.9375rem;
+  --lh-body: 1.7;
+
+  /* Maße */
+  --radius-sm: 12px;
+  --radius: 20px;
+  --radius-lg: 32px;
+  --header-h: 76px;
+  --content-w: 72ch;
+  --page-pad: clamp(1rem, 4vw, 2.5rem);
+
+  /* Bewegung */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur: 420ms;
+}
+
+/* Boxen: Waldgrün, Fließtext in Papier, Titel in Rosé. Schaltet die Rollen für alles darin um. */
+.box-dunkel,
+.card,
+.prose blockquote,
+.placeholder-note {
+  --flaeche: var(--waldgruen);
+  --flaeche-erhoeht: var(--waldgruen-hell);
+  --flaeche-tief: var(--waldgruen-tief);
+  --text: var(--papier); /* 9,8:1 auf waldgruen */
+  --text-leise: #d5dcd3; /* 7,6:1 auf waldgruen */
+  --ueberschrift: var(--rose);
+  --akzent: var(--rose);
+  --auf-akzent: var(--waldgruen);
+  --icon: var(--rose);
+  --linie: rgba(255, 255, 255, 0.16);
+  --linie-rose: rgba(241, 198, 199, 0.55); /* 3,3:1 auf waldgruen */
+  color: var(--text);
+}
+
+@media (max-width: 640px) {
+  :root {
+    --header-h: 64px;
+  }
+}
+
+/* ---------- Basis ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--header-h) + 1rem);
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--flaeche);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Feine Papierstruktur (keine Farbverläufe – siehe Design Board) */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+body::after {
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
+  color: var(--ueberschrift);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+  margin: 0 0 0.6em;
+  text-wrap: balance;
+  hyphens: manual;
+}
+h1 {
+  font-size: clamp(2rem, 1.4rem + 3vw, 3.5rem);
+}
+h2 {
+  font-size: clamp(1.6rem, 1.25rem + 1.6vw, 2.4rem);
+}
+h3 {
+  font-size: clamp(1.25rem, 1.1rem + 0.7vw, 1.6rem);
+}
+
+p {
+  margin: 0 0 1em;
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--akzent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: color 200ms var(--ease);
+}
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+strong {
+  font-weight: 700;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+:focus-visible {
+  outline: 3px solid var(--akzent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+::selection {
+  background: var(--akzent);
+  color: var(--auf-akzent);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -100px;
+  z-index: 100;
+  padding: 0.75rem 1.25rem;
+  background: var(--akzent);
+  color: var(--auf-akzent);
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+}
+.skip-link:focus {
+  top: 1rem;
+}
+
+main {
+  flex: 1;
+  width: 100%;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 50px;
+  padding: 0.75rem 1.4rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--linie-rose);
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 1.0625rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 250ms var(--ease),
+    background-color 250ms var(--ease),
+    border-color 250ms var(--ease),
+    color 250ms var(--ease);
+}
+.btn .icon {
+  color: var(--icon);
+  transition: transform 250ms var(--ease);
+}
+.btn:hover .icon:last-child {
+  transform: translateX(3px);
+}
+.btn--primary {
+  background: var(--akzent);
+  border: 1.5px solid var(--akzent);
+  color: var(--auf-akzent);
+}
+.btn--primary .icon {
+  color: currentColor;
+}
+.btn--primary:hover {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--flaeche);
+  transform: translateY(-2px);
+}
+.btn--ghost {
+  background: transparent;
+  border-color: var(--linie-rose);
+  color: var(--text);
+}
+.btn--ghost:hover {
+  border-color: var(--akzent);
+  color: var(--text);
+  background: var(--flaeche-erhoeht);
+  transform: translateY(-2px);
+}
+
+/* ---------- Unterseiten ---------- */
+.page {
+  width: 100%;
+  max-width: calc(var(--content-w) + 2 * var(--page-pad));
+  margin: 0 auto;
+  padding: clamp(2rem, 6vw, 4.5rem) var(--page-pad) clamp(3rem, 8vw, 6rem);
+}
+.page__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-heading);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-leise);
+  margin-bottom: 0.75rem;
+}
+.page__eyebrow .icon {
+  color: var(--icon);
+}
+.page__lead {
+  font-size: 1.15em;
+  color: var(--text-leise);
+  margin-bottom: 2.5rem;
+}
+
+/* Fließtext aus Markdown */
+.prose > * + * {
+  margin-top: 0;
+}
+.prose h2 {
+  margin-top: 2.2em;
+}
+.prose h3 {
+  margin-top: 1.8em;
+}
+.prose ul,
+.prose ol {
+  padding-left: 1.3em;
+  margin: 0 0 1.2em;
+}
+.prose li {
+  margin-bottom: 0.4em;
+}
+.prose ul li::marker {
+  color: var(--icon);
+}
+.prose blockquote {
+  margin: 1.6em 0;
+  padding: 1.1em 1.4em;
+  border-left: 4px solid var(--akzent);
+  background: var(--flaeche);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-family: var(--font-heading);
+  font-size: 1.15em;
+  line-height: 1.45;
+}
+.prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+.prose hr {
+  border: 0;
+  height: 1px;
+  background: var(--linie);
+  margin: 2.5em 0;
+}
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  font-size: 0.95em;
+}
+.prose th,
+.prose td {
+  text-align: left;
+  padding: 0.6em 0.8em;
+  border-bottom: 1px solid var(--linie);
+}
+.prose em {
+  color: var(--text-leise);
+}
+
+/* Platzhalter-Hinweis (nur sichtbar, solange Platzhalter vorhanden sind) */
+.placeholder-note {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 1rem 1.25rem;
+  margin-bottom: 2rem;
+  border: 2px dashed var(--akzent);
+  border-radius: var(--radius-sm);
+  background: var(--flaeche);
+  font-size: var(--fs-small);
+}
+
+/* Karten */
+.card {
+  background: var(--flaeche);
+  border: 1px solid var(--linie);
+  border-radius: var(--radius);
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+/* Seitenübergänge (native, ohne JavaScript) */
+@view-transition {
+  navigation: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  @view-transition {
+    navigation: none;
+  }
+}

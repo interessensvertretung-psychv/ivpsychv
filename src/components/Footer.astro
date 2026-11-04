@@ -1,0 +1,90 @@
+---
+import Icon from './Icon.astro';
+import { organisation } from '../config/organisation';
+import { url } from '../lib/utils';
+
+interface Props {
+  kompakt?: boolean;
+}
+const { kompakt = false } = Astro.props;
+const jahr = new Date().getFullYear();
+---
+
+<footer class:list={['site-footer', 'box-dunkel', { 'site-footer--kompakt': kompakt }]}>
+  <div class="site-footer__inner">
+    <nav class="site-footer__nav" aria-label="Rechtliches und Service">
+      <a href={url('/impressum/')}>Impressum</a>
+      <a href={url('/datenschutz/')}>Datenschutz</a>
+      <a href={url('/kontakt/')}>Kontakt</a>
+      <a href={url('/hilfe-in-krisen/')} class="site-footer__help">
+        <Icon name="lifebuoy" size={18} />
+        Hilfe in Krisen
+      </a>
+    </nav>
+
+    <p class="site-footer__copy">
+      © {jahr} {organisation.name} · parteipolitisch unabhängig
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--linie);
+    background: var(--flaeche);
+    font-size: var(--fs-small);
+  }
+  .site-footer__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1.5rem var(--page-pad) calc(1.5rem + env(safe-area-inset-bottom));
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+  }
+  .site-footer--kompakt .site-footer__inner {
+    padding-top: 1rem;
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
+  .site-footer__nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.5rem;
+  }
+  .site-footer__nav a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 44px;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .site-footer__nav a:hover {
+    color: var(--akzent);
+    text-decoration: underline;
+  }
+  .site-footer__help {
+    color: var(--akzent) !important;
+  }
+  .site-footer__copy {
+    margin: 0;
+    color: var(--text-leise);
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 640px) {
+    .site-footer__inner {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+      /* Platzhalter rechts unten freihalten, damit der schwebende Button nichts verdeckt */
+      padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
+      padding-right: 8rem;
+    }
+    .site-footer__nav {
+      gap: 0 1.1rem;
+    }
+  }
+</style>

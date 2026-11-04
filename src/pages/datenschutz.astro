@@ -1,0 +1,201 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { organisation, istPlatzhalter } from '../config/organisation';
+import { url, ohneKlammern } from '../lib/utils';
+
+const istGitHub = organisation.hosting === 'github-pages';
+const istVerein = organisation.rechtsform === 'verein';
+const verantwortlicherName = istVerein
+  ? organisation.verein.name
+  : organisation.verantwortlich.name;
+const verantwortlicheAnschrift = istVerein
+  ? `${organisation.verein.strasse}, ${organisation.verein.ort}`
+  : [organisation.verantwortlich.zusatz, organisation.verantwortlich.strasse, organisation.verantwortlich.ort]
+      .filter(Boolean)
+      .join(', ');
+const kontaktMail = istVerein
+  ? organisation.kontakt.email
+  : organisation.verantwortlich.email;
+---
+
+<PageLayout
+  titel="Datenschutzerklärung"
+  beschreibung="Informationen über die Verarbeitung personenbezogener Daten gemäß der DSGVO."
+  noindex
+>
+  <div class="prose">
+    <p>
+      Der Schutz deiner persönlichen Daten ist uns als Patient*inneninitiative ein zentrales Anliegen.
+      Diese Website ist nach dem Grundsatz der Datensparsamkeit gestaltet: Wir verzichten bewusst
+      auf Tracking-Tools, Werbe-Tracker, externe Analyse-Dienste und setzen keine Cookies ein.
+    </p>
+
+    <h2>1. Verantwortliche Stelle</h2>
+    <p>
+      Verantwortlich für die Datenverarbeitung auf dieser Website im Sinne der Datenschutz-Grundverordnung
+      (DSGVO) ist:
+    </p>
+    <p>
+      <strong>{verantwortlicherName}</strong>
+      <br />
+      {verantwortlicheAnschrift}
+      <br />
+      E-Mail:{' '}
+      <a href={`mailto:${ohneKlammern(kontaktMail)}`}>{kontaktMail}</a>
+    </p>
+
+    <h2>2. Hosting und Server-Logfiles</h2>
+    {
+      istGitHub ? (
+        <>
+          <p>
+            Diese Website wird über <strong>GitHub Pages</strong> gehostet, einen Dienst der GitHub
+            Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA (bzw. GitHub B.V., Prins Bernhardplein 200, 1097 JB Amsterdam, Niederlande für Nutzer im EWR).
+          </p>
+          <p>
+            Beim Aufruf der Website erfasst GitHub automatisch Informationen, die dein Browser
+            übermittelt (Server-Logfiles). Hierzu können gehören:
+          </p>
+          <ul>
+            <li>IP-Adresse des anfragenden Geräts</li>
+            <li>Datum und Uhrzeit der Serveranfrage</li>
+            <li>Name und URL der abgerufenen Datei</li>
+            <li>Übertragene Datenmenge</li>
+            <li>Browsertyp und Browserversion</li>
+            <li>Verwendetes Betriebssystem</li>
+            <li>Referrer URL (zuvor besuchte Seite)</li>
+          </ul>
+          <p>
+            Die Erfassung dieser Daten erfolgt zur Sicherstellung eines reibungslosen Verbindungsaufbaus
+            der Website, zur Gewährleistung der Systemsicherheit und -stabilität sowie zur Abwehr von
+            Angriffen auf die Infrastruktur. Rechtsgrundlage für die vorübergehende Speicherung der Daten
+            und der Logfiles ist <strong>Art. 6 Abs. 1 lit. f DSGVO</strong> (berechtigtes Interesse
+            an einer sicheren und fehlerfreien Bereitstellung unseres Onlineangebots).
+          </p>
+          <p>
+            Die Datenübertragung in die USA wird auf Standardvertragsklauseln der EU-Kommission bzw.
+            das EU-U.S. Data Privacy Framework gestützt. Weitere Informationen findest du in der{' '}
+            <a href="https://docs.github.com/de/site-policy/privacy-policies/github-privacy-statement" target="_blank" rel="noopener noreferrer">
+              GitHub Privacy Statement
+            </a>.
+          </p>
+          <p>
+            <em>Hinweis für Betreiber: Falls das Hosting auf einen deutschen oder europäischen Hoster (z. B. Hetzner, Uberspace) verlegt wird, passe einfach die Option <code>hosting</code> in <code>src/config/organisation.ts</code> an.</em>
+          </p>
+        </>
+      ) : (
+        <>
+          <p>
+            Diese Website wird gehostet bei <strong>{organisation.hostingAnbieter.name}</strong> ({organisation.hostingAnbieter.anschrift}).
+          </p>
+          <p>
+            Beim Aufruf unserer Seiten erhebt der Webhoster in Logfiles Zugriffsdaten (wie IP-Adresse, Datum/Uhrzeit, abgerufene Seite, Browsertyp). Rechtsgrundlage ist <strong>Art. 6 Abs. 1 lit. f DSGVO</strong>.
+          </p>
+          {organisation.hostingAnbieter.datenschutzUrl && (
+            <p>
+              Weitere Details:{' '}
+              <a href={organisation.hostingAnbieter.datenschutzUrl} target="_blank" rel="noopener noreferrer">
+                Datenschutzerklärung des Hosters
+              </a>.
+            </p>
+          )}
+        </>
+      )
+    }
+
+    <h2>3. Keine Cookies, kein Tracking</h2>
+    <p>
+      Diese Website verwendet <strong>weder technisch notwendige noch zustimmungspflichtige Cookies</strong>.
+      Wir setzen keine Analyse-Werkzeuge (wie bspw. Google Analytics oder Matomo) ein und erstellen
+      keine Nutzerprofile.
+    </p>
+
+    <h2>4. Lokale Schriften (Kein Google-Fonts-CDN)</h2>
+    <p>
+      Zur einheitlichen und ansprechenden Darstellung nutzen wir die freien Schriftarten Jost und Lexend. Diese Schriften sind <strong>vollständig lokal auf unserem Server
+      installiert</strong>. Beim Laden der Seite wird keine Verbindung zu Servern von Google oder
+      anderen Drittanbietern aufgebaut. Deine IP-Adresse wird zu diesem Zweck an niemanden weitergegeben.
+    </p>
+
+    <h2>5. Kontaktaufnahme per E-Mail</h2>
+    <p>
+      Wenn du uns per E-Mail kontaktierst, werden deine E-Mail-Adresse sowie die von dir übermittelten
+      Angaben und Texte zum Zweck der Bearbeitung deiner Anfrage und für den Fall von Anschlussfragen
+      bei uns verarbeitet.
+    </p>
+    <p>
+      Rechtsgrundlage ist <strong>Art. 6 Abs. 1 lit. b DSGVO</strong> (Anbahnung einer Mitwirkung)
+      bzw. <strong>Art. 6 Abs. 1 lit. f DSGVO</strong> (unser berechtigtes Interesse an der Beantwortung
+      deines Anliegens).
+    </p>
+    <blockquote>
+      <strong>Wichtiger Hinweis zu sensiblen Daten (Art. 9 DSGVO):</strong>
+      <br />
+      Als Patient*inneninitiative ist uns bewusst, dass Anfragen persönliche Erfahrungen mit
+      Erkrankungen (Gesundheitsdaten) berühren können. Wir bitten dich, uns bei der Erstansprache
+      keine vertraulichen Diagnosen oder intimen Krankheitsgeschichten unverschlüsselt per E-Mail zu
+      senden. Ein kurzes Interessensbekunden genügt vollkommen. Solltest du freiwillig Gesundheitsdaten
+      übermitteln, willigst du in deren Verarbeitung zur Bearbeitung deiner Anfrage ein (Art. 9 Abs. 2 lit. a DSGVO). Du kannst diese Einwilligung jederzeit für die Zukunft widerrufen.
+    </blockquote>
+
+    <h2>6. Nutzung von Matrix / Element</h2>
+    <p>
+      Für unseren internen Austausch nutzen wir das dezentrale Netzwerk <strong>Matrix</strong> und
+      den Client <strong>Element</strong>. Matrix ermöglicht private, Ende-zu-Ende-verschlüsselte
+      Räume.
+    </p>
+    <p>
+      Unsere Website bindet keine externen Skripte von Matrix oder Element ein. Es befindet sich
+      lediglich ein externer Link auf <code>matrix.to</code> auf unserer Seite. Erst mit dem aktiven Anklicken dieses Links verlässt du unsere Website. Die Erstellung eines Matrix-Accounts und die Kommunikation dort erfolgen gemäß den Datenschutzbestimmungen des von dir gewählten Matrix-Homeservers (z. B. matrix.org).
+    </p>
+
+    <h2>7. Social Media (Instagram & weitere)</h2>
+    <p>
+      Wir binden auf unserer Website <strong>keine Social-Media-Plugins</strong> ein, die bereits
+      beim Seitenaufruf Daten an Plattformbetreiber wie Meta (Instagram/Facebook) übertragen würden.
+      Auf unserer Website finden sich ausschließlich gewöhnliche Hyperlinks zu unserem jeweiligen
+      Profil. Ein Datenaustausch mit den Plattformen findet erst statt, wenn du den Link aktiv anklickst.
+    </p>
+
+    <h2>8. SSL- bzw. TLS-Verschlüsselung</h2>
+    <p>
+      Diese Seite nutzt aus Sicherheitsgründen und zum Schutz der Übertragung aller Daten eine
+      SSL- bzw. TLS-Verschlüsselung (erkennbar am Präfix <code>https://</code> in der Adresszeile
+      des Browsers).
+    </p>
+
+    <h2>9. Deine Rechte nach der DSGVO</h2>
+    <p>Du hast im Rahmen der geltenden gesetzlichen Bestimmungen jederzeit das Recht auf:</p>
+    <ul>
+      <li><strong>Auskunft</strong> über deine bei uns verarbeiteten personenbezogenen Daten (Art. 15 DSGVO)</li>
+      <li><strong>Berichtigung</strong> unrichtiger oder Vervollständigung unvollständiger Daten (Art. 16 DSGVO)</li>
+      <li><strong>Löschung</strong> deiner bei uns gespeicherten Daten (Art. 17 DSGVO)</li>
+      <li><strong>Einschränkung der Verarbeitung</strong> (Art. 18 DSGVO)</li>
+      <li><strong>Datenübertragbarkeit</strong> (Art. 20 DSGVO)</li>
+      <li><strong>Widerspruch</strong> gegen die Verarbeitung aus Gründen deiner besonderen Situation (Art. 21 DSGVO)</li>
+      <li><strong>Widerruf</strong> einer einmal erteilten Einwilligung mit Wirkung für die Zukunft (Art. 7 Abs. 3 DSGVO)</li>
+    </ul>
+    <p>
+      Zur Ausübung dieser Rechte wende dich bitte formlos per E-Mail an die unter Ziffer 1 genannte
+      Adresse.
+    </p>
+
+    <h2>10. Beschwerderecht bei einer Aufsichtsbehörde</h2>
+    <p>
+      Im Falle von Verstößen gegen die DSGVO steht dir ein Beschwerderecht bei einer
+      Datenschutz-Aufsichtsbehörde zu, insbesondere in dem Mitgliedstaat deines gewöhnlichen
+      Aufenthaltsorts, deines Arbeitsplatzes oder des Orts des mutmaßlichen Verstoßes (Art. 77 DSGVO).
+    </p>
+    <p>
+      Zuständige Aufsichtsbehörde (abhängig vom Wohnsitz/Sitz der verantwortlichen Person):
+      <br />
+      <em>{organisation.aufsichtsbehoerde.name}</em>
+    </p>
+
+    <p>
+      <small>Stand dieser Datenschutzerklärung: {organisation.standRechtstexte}</small>
+    </p>
+
+    <p><a href={url('/')}>← Zurück zur Startseite</a></p>
+  </div>
+</PageLayout>

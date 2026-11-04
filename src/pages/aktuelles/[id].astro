@@ -1,0 +1,20 @@
+---
+import { getCollection, render } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+import { url, datumDE } from '../../lib/utils';
+
+export async function getStaticPaths() {
+  const beitraege = await getCollection('aktuelles', (b) => !b.data.entwurf);
+  return beitraege.map((beitrag) => ({ params: { id: beitrag.id }, props: { beitrag } }));
+}
+
+const { beitrag } = Astro.props;
+const { Content } = await render(beitrag);
+---
+
+<PageLayout titel={beitrag.data.titel} beschreibung={beitrag.data.zusammenfassung} eyebrow={datumDE(beitrag.data.datum)} icon="calendar">
+  <div class="prose">
+    <Content />
+    <p><a href={url('/aktuelles/')}>← Alle Meldungen</a></p>
+  </div>
+</PageLayout>

@@ -1,0 +1,51 @@
+---
+import Icon from './Icon.astro';
+import { organisation } from '../config/organisation';
+
+interface Props {
+  groesse?: number;
+  mitText?: boolean;
+}
+const { groesse = 22, mitText = false } = Astro.props;
+const instagram = organisation.social.instagram;
+---
+
+{
+  instagram ? (
+    <a class="social" href={instagram} rel="noopener noreferrer" target="_blank" aria-label="Instagram (öffnet in neuem Tab)">
+      <Icon name="instagram" size={groesse} />
+      {mitText && <span>Instagram</span>}
+    </a>
+  ) : (
+    <span class="social social--soon" title="Instagram – bald verfügbar">
+      <Icon name="instagram" size={groesse} />
+      {mitText ? <span>Instagram – bald verfügbar</span> : <span class="visually-hidden">Instagram – bald verfügbar</span>}
+    </span>
+  )
+}
+
+<style>
+  .social {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    min-width: 44px;
+    justify-content: center;
+    padding: 0.4rem;
+    border-radius: 999px;
+    color: var(--text);
+    text-decoration: none;
+    transition:
+      color 200ms var(--ease),
+      transform 250ms var(--ease);
+  }
+  a.social:hover {
+    color: var(--akzent);
+    transform: translateY(-2px);
+  }
+  .social--soon {
+    opacity: 0.55;
+    cursor: help;
+  }
+</style>

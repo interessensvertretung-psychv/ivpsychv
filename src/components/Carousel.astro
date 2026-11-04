@@ -1,0 +1,698 @@
+---
+import { getCollection, render } from 'astro:content';
+import Icon from './Icon.astro';
+import { organisation } from '../config/organisation';
+import { url, zielAufloesen } from '../lib/utils';
+
+const eintraege = (await getCollection('startseite'))
+  .filter((s) => s.data.sichtbar)
+  .sort((a, b) => a.data.reihenfolge - b.data.reihenfolge);
+
+const slides = await Promise.all(
+  eintraege.map(async (e) => ({ ...e.data, id: e.id, Content: (await render(e)).Content })),
+);
+const anzahl = slides.length;
+const nr = (i: number) => String(i + 1).padStart(2, '0');
+/** Erste Überschrift in Zeilen (nach Satzende) aufteilen */
+const zeilen = (t: string) => t.split(/(?<=[.!?])\s+/);
+---
+
+<section class="carousel" data-carousel aria-roledescription="Karussell" aria-label={`Über die ${organisation.name}`}>
+  <div class="carousel__stage">
+    <button class="carousel__arrow carousel__arrow--side" type="button" data-prev aria-label="Vorheriger Abschnitt">
+      <Icon name="chevron-left" size={28} />
+    </button>
+
+    <div class="carousel__track" data-track>
+      {
+        slides.map((s, i) => (
+          <article
+            class:list={['slide', { 'slide--hero': i === 0, 'slide--bild': !!s.bild, 'is-active': i === 0 }]}
+            id={s.anker}
+            data-slide
+            data-title={s.titel}
+            role="group"
+            aria-roledescription="Abschnitt"
+            aria-label={`${i + 1} von ${anzahl}`}
+          >
+            <div class="slide__card box-dunkel" data-card>
+              <div class="slide__body">
+                {i === 0 && (
+                  <img class="slide__logo" src={url('/logo-512.png')} alt="" width="512" height="512" fetchpriority="high" />
+                )}
+
+                <p class="slide__nr" aria-hidden="true">
+                  <span>{nr(i)}</span> / {nr(anzahl - 1)}
+                </p>
+
+                {i === 0 ? (
+                  <h1 class="slide__title slide__title--hero">
+                    {zeilen(s.titel).map((z, n) => (
+                      <span class="slide__line" style={`--n:${n}`}>
+                        {z}
+
+                      </span>
+                    ))}
+                  </h1>
+                ) : (
+                  <h2 class:list={['slide__title', { 'slide__title--cont': s.fortsetzung }]}>{s.titel}</h2>
+                )}
+
+                <div class="slide__text prose">
+                  <s.Content />
+                </div>
+
+                {s.werte && (
+                  <ul class="slide__werte">
+                    {s.werte.map((w) => (
+                      <li>
+                        <span class="slide__werte-icon">
+                          <Icon name={w.icon} size={22} />
+                        </span>
+                        {w.text}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {(s.button || s.link) && (
+                  <div class="slide__actions">
+                    {s.button && (
+                      <a class="btn btn--primary" href={zielAufloesen(s.button.ziel)}>
+                        {s.button.ziel === 'kontakt-email' && <Icon name="mail" size={20} />}
+                        {s.button.text}
+                      </a>
+                    )}
+                    {s.link && (
+                      <a class="btn btn--ghost" href={zielAufloesen(s.link.ziel)}>
+                        {s.link.text}
+                        <Icon name="arrow-right" size={18} />
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {s.bild && (
+                <figure class="slide__figure">
+                  <img src={url(s.bild)} alt={s.bild_alt ?? ''} loading="lazy" />
+                </figure>
+              )}
+              <div class="slide__fade" aria-hidden="true"></div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <button class="carousel__arrow carousel__arrow--side hint" type="button" data-next aria-label="Nächster Abschnitt">
+      <Icon name="chevron-right" size={28} />
+    </button>
+  </div>
+
+  <div class="carousel__controls">
+    <button class="carousel__arrow carousel__arrow--bar" type="button" data-prev aria-label="Vorheriger Abschnitt">
+      <Icon name="chevron-left" size={26} />
+    </button>
+
+    <ol class="carousel__dots" aria-label="Abschnitte">
+      {
+        slides.map((s, i) => (
+          <li>
+            <button
+              type="button"
+              class="carousel__dot"
+              data-dot={i}
+              aria-label={`Abschnitt ${i + 1}: ${s.titel}`}
+              aria-current={i === 0 ? 'step' : 'false'}
+            >
+              <Icon name="ribbon" size={20} />
+            </button>
+          </li>
+        ))
+      }
+    </ol>
+
+    <button class="carousel__arrow carousel__arrow--bar hint" type="button" data-next aria-label="Nächster Abschnitt">
+      <Icon name="chevron-right" size={26} />
+    </button>
+  </div>
+
+  <p class="visually-hidden" aria-live="polite" data-live></p>
+</section>
+
+<script>
+  function initCarousel(root: HTMLElement) {
+    const track = root.querySelector<HTMLElement>('[data-track]')!;
+    const slides = Array.from(root.querySelectorAll<HTMLElement>('[data-slide]'));
+    const cards = Array.from(root.querySelectorAll<HTMLElement>('[data-card]'));
+    const dots = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-dot]'));
+    const prevs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-prev]'));
+    const nexts = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-next]'));
+    const live = root.querySelector<HTMLElement>('[data-live]')!;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let index = 0;
+    let settleTimer: number | undefined;
+
+    const clamp = (i: number) => Math.max(0, Math.min(slides.length - 1, i));
+
+    function stopHint() {
+      nexts.forEach((b) => b.classList.remove('hint'));
+    }
+
+    function setActive(i: number, announce = true) {
+      index = i;
+      slides.forEach((s, n) => s.classList.toggle('is-active', n === i));
+      dots.forEach((d, n) => d.setAttribute('aria-current', n === i ? 'step' : 'false'));
+      prevs.forEach((b) => (b.disabled = i === 0));
+      nexts.forEach((b) => (b.disabled = i === slides.length - 1));
+      if (announce) {
+        live.textContent = `Abschnitt ${i + 1} von ${slides.length}: ${slides[i].dataset.title ?? ''}`;
+      }
+      const hash = i === 0 ? '' : `#${slides[i].id}`;
+      if (location.hash !== hash) {
+        history.replaceState(null, '', hash || location.pathname + location.search);
+      }
+      if (i > 0) stopHint();
+    }
+
+    function goTo(i: number, smooth = true) {
+      const ziel = clamp(i);
+      track.scrollTo({
+        left: slides[ziel].offsetLeft,
+        behavior: smooth && !reduce.matches ? 'smooth' : 'auto',
+      });
+      if (ziel !== index) setActive(ziel);
+    }
+
+    // Position nach dem Wischen/Scrollen bestimmen
+    function settle() {
+      const i = clamp(Math.round(track.scrollLeft / track.clientWidth));
+      if (i !== index) setActive(i);
+    }
+    track.addEventListener(
+      'scroll',
+      () => {
+        window.clearTimeout(settleTimer);
+        settleTimer = window.setTimeout(settle, 90);
+      },
+      { passive: true },
+    );
+    track.addEventListener('scrollend', settle);
+
+    prevs.forEach((b) => b.addEventListener('click', () => goTo(index - 1)));
+    nexts.forEach((b) => b.addEventListener('click', () => goTo(index + 1)));
+    dots.forEach((d) => d.addEventListener('click', () => goTo(Number(d.dataset.dot))));
+
+    // Tastatur: Pfeiltasten links/rechts, Pos1/Ende
+    root.addEventListener('keydown', (e) => {
+      const t = e.target as HTMLElement;
+      if (t.closest('input, textarea, select')) return;
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        goTo(index + 1);
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        goTo(index - 1);
+      } else if (e.key === 'Home' && t.closest('.carousel__dots')) {
+        e.preventDefault();
+        goTo(0);
+      } else if (e.key === 'End' && t.closest('.carousel__dots')) {
+        e.preventDefault();
+        goTo(slides.length - 1);
+      }
+    });
+
+    // Wer per Tab-Taste einen Link in einem anderen Abschnitt erreicht, wird dorthin geführt
+    track.addEventListener('focusin', (e) => {
+      const s = (e.target as HTMLElement).closest<HTMLElement>('[data-slide]');
+      const i = s ? slides.indexOf(s) : -1;
+      if (i >= 0 && i !== index) goTo(i, false);
+    });
+
+    // Direktlinks wie /#mach-mit
+    const fromHash = (smooth: boolean) => {
+      const id = decodeURIComponent(location.hash.slice(1));
+      const i = slides.findIndex((s) => s.id === id);
+      if (i >= 0) goTo(i, smooth);
+    };
+    window.addEventListener('hashchange', () => fromHash(true));
+
+    // Hinweis „mehr Text“ bei langen Abschnitten (v. a. auf kleinen Bildschirmen)
+    const checkOverflow = (c: HTMLElement) => {
+      const more = c.scrollHeight - c.scrollTop - c.clientHeight > 6;
+      c.classList.toggle('has-more', more);
+    };
+    cards.forEach((c) => {
+      c.addEventListener('scroll', () => checkOverflow(c), { passive: true });
+    });
+
+    const realign = () => {
+      track.scrollTo({ left: slides[index].offsetLeft, behavior: 'auto' });
+      cards.forEach(checkOverflow);
+    };
+    new ResizeObserver(realign).observe(track);
+
+    setActive(0, false);
+    if (location.hash) {
+      requestAnimationFrame(() => {
+        fromHash(false);
+        window.scrollTo({ top: 0 });
+      });
+    }
+    cards.forEach(checkOverflow);
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-carousel]').forEach(initCarousel);
+</script>
+
+<style>
+  .carousel {
+    --track-h: clamp(460px, calc(100svh - var(--header-h) - 150px), 740px);
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: clamp(0.75rem, 3vh, 2rem) var(--page-pad) 0.5rem;
+  }
+
+  .carousel__stage {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+  }
+
+  /* ---------- Spur & Abschnitte ---------- */
+  .carousel__track {
+    position: relative;
+    display: flex;
+    height: var(--track-h);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    border-radius: var(--radius-lg);
+  }
+  .carousel__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .slide {
+    flex: 0 0 100%;
+    height: 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    padding: 0 2px;
+  }
+
+  .slide__card {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    padding: clamp(1.5rem, 5vw, 3.75rem) clamp(1.35rem, 5vw, 4.25rem);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--linie);
+    background: var(--flaeche);
+    box-shadow: var(--schatten);
+    scrollbar-width: thin;
+    scrollbar-color: var(--linie-rose) transparent;
+  }
+  /* weicher Ausblendverlauf in Boxfarbe, wenn noch Text folgt – blendet nur den Text aus, nicht die Box */
+  .slide__fade {
+    position: sticky;
+    bottom: calc(-1 * clamp(1.5rem, 5vw, 3.75rem));
+    grid-column: 1 / -1;
+    flex-shrink: 0;
+    height: 72px;
+    margin-top: -72px;
+    margin-inline: calc(-1 * clamp(1.35rem, 5vw, 4.25rem));
+    background: linear-gradient(180deg, transparent, var(--flaeche) 85%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 200ms;
+  }
+  .slide__card:global(.has-more) .slide__fade {
+    opacity: 1;
+  }
+
+  .slide__body {
+    margin-block: auto; /* vertikal zentriert, ohne bei langem Text oben abzuschneiden */
+    max-width: 62ch;
+  }
+
+  .slide__nr {
+    margin: 0 0 1.1rem;
+    font-family: var(--font-heading);
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--text-leise);
+  }
+  .slide__nr span {
+    color: var(--akzent);
+  }
+
+  .slide__title {
+    font-size: clamp(1.75rem, 1.3rem + 2vw, 2.75rem);
+    margin-bottom: 0.7em;
+  }
+  .slide__title--cont {
+    font-size: clamp(1.15rem, 1rem + 0.7vw, 1.5rem);
+    font-weight: 500;
+    color: var(--ueberschrift);
+  }
+  .slide__title--cont::before {
+    content: '… ';
+  }
+
+  .slide__text {
+    font-size: clamp(1.0625rem, 0.98rem + 0.4vw, 1.3rem);
+    line-height: 1.65;
+  }
+  .slide__text :global(p:last-child) {
+    margin-bottom: 0;
+  }
+  .slide__text :global(blockquote) {
+    color: var(--text);
+  }
+
+  /* ---------- Startabschnitt ---------- */
+  .slide--hero .slide__card {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(1.5rem, 4vw, 4rem);
+  }
+  .slide--hero .slide__body {
+    display: contents;
+  }
+  .slide--hero .slide__logo {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    width: min(100%, 340px);
+    height: auto;
+    justify-self: center;
+    /* heller Schein in Waldgrün hell, damit das Logo vom Waldgrün abhebt */
+    filter: drop-shadow(0 0 4px var(--waldgruen-hell)) drop-shadow(0 0 36px var(--waldgruen-hell));
+    animation:
+      logo-in 900ms var(--ease) 200ms both,
+      float 7s ease-in-out 1.2s infinite;
+  }
+  .slide--hero .slide__nr,
+  .slide--hero .slide__title,
+  .slide--hero .slide__text {
+    grid-column: 1;
+  }
+  .slide--hero .slide__nr {
+    align-self: end;
+    margin: 0;
+  }
+  .slide--hero .slide__text {
+    align-self: start;
+    max-width: 52ch;
+  }
+  .slide__title--hero {
+    font-size: clamp(2.1rem, 1.2rem + 3.6vw, 4.1rem);
+    font-weight: 700;
+    line-height: 1.05;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+  .slide__line {
+    position: relative;
+    display: block;
+    width: fit-content;
+    animation: line-in 800ms var(--ease) both;
+    animation-delay: calc(120ms + var(--n) * 140ms);
+  }
+  
+  
+
+  @keyframes line-in {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+  }
+  @keyframes logo-in {
+    from {
+      opacity: 0;
+      transform: scale(0.85) rotate(-12deg);
+    }
+  }
+  @keyframes float {
+    50% {
+      transform: translateY(-10px) rotate(2deg);
+    }
+  }
+  
+  }
+
+  /* ---------- Werte ---------- */
+  .slide__werte {
+    list-style: none;
+    margin: 1.75rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+  }
+  .slide__werte li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius);
+    background: var(--flaeche-erhoeht);
+    border: 1px solid var(--linie);
+    font-family: var(--font-heading);
+    font-weight: 500;
+    line-height: 1.3;
+    transition:
+      border-color 250ms var(--ease),
+      transform 250ms var(--ease);
+  }
+  .slide__werte li:hover {
+    border-color: var(--linie-rose);
+    transform: translateY(-2px);
+  }
+  .slide__werte-icon {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--flaeche-tief);
+    color: var(--icon);
+  }
+
+  .slide__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+    margin-top: 2rem;
+  }
+
+  /* ---------- Optionales Bild ---------- */
+  .slide--bild .slide__card {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    align-items: center;
+  }
+  .slide__figure {
+    margin: 0;
+  }
+  .slide__figure img {
+    width: 100%;
+    height: auto;
+    max-height: calc(var(--track-h) - 6rem);
+    object-fit: contain;
+  }
+
+  /* ---------- Pfeile ---------- */
+  .carousel__arrow {
+    display: none;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 1.5px solid var(--akzent);
+    background: var(--flaeche);
+    color: var(--akzent);
+    cursor: pointer;
+    box-shadow: none;
+    transition:
+      transform 250ms var(--ease),
+      background-color 250ms var(--ease),
+      border-color 250ms var(--ease),
+      color 250ms var(--ease),
+      opacity 250ms var(--ease);
+  }
+  :global(.js) .carousel__arrow--side {
+    display: grid;
+  }
+  .carousel__arrow:hover:not(:disabled) {
+    background: var(--flaeche-erhoeht);
+    border-color: var(--text);
+    color: var(--text);
+    transform: scale(1.06);
+  }
+  .carousel__arrow:active:not(:disabled) {
+    transform: scale(0.96);
+  }
+  .carousel__arrow:disabled {
+    opacity: 0.25;
+    cursor: default;
+    box-shadow: none;
+  }
+  .carousel__arrow:global(.hint) {}
+  @keyframes pulse {}
+
+  /* ---------- Fortschritt (Schleifen) ---------- */
+  .carousel__controls {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 0 0.5rem;
+  }
+  :global(.js) .carousel__controls {
+    display: flex;
+  }
+  .carousel__dots {
+    list-style: none;
+    display: flex;
+    gap: 0.15rem;
+    margin: 0;
+    padding: 0;
+  }
+  .carousel__dot {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--altrose);
+    cursor: pointer;
+    transition:
+      color 300ms var(--ease),
+      transform 300ms var(--ease);
+  }
+  .carousel__dot:hover {
+    color: var(--akzent);
+    transform: translateY(-2px);
+  }
+  .carousel__dot[aria-current='step'] {
+    color: var(--waldgruen);
+    transform: scale(1.35);
+  }
+
+  /* Scroll-gesteuerte Überblendung (moderne Browser) */
+  @supports (animation-timeline: view()) {
+    .slide__card {
+      animation: slide-fx linear both;
+      animation-timeline: view(inline);
+    }
+    @keyframes slide-fx {
+      0% {
+        opacity: 0.25;
+        transform: scale(0.94);
+      }
+      50% {
+        opacity: 1;
+        transform: none;
+      }
+      100% {
+        opacity: 0.25;
+        transform: scale(0.94);
+      }
+    }
+  }
+
+  /* ---------- Tablet & Mobil ---------- */
+  @media (max-width: 960px) {
+    .carousel__stage {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    :global(.js) .carousel__arrow--side {
+      display: none;
+    }
+    :global(.js) .carousel__arrow--bar {
+      display: grid;
+      width: 50px;
+      height: 50px;
+    }
+    .slide--hero .slide__card,
+    .slide--bild .slide__card {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .slide--hero .slide__body {
+      display: block;
+      margin-block: auto;
+    }
+    .slide--hero .slide__logo {
+      width: clamp(88px, 22vw, 150px);
+      margin: 0 0 1.25rem;
+      animation: logo-in 900ms var(--ease) 200ms both;
+    }
+    .slide--hero .slide__title {
+      margin-bottom: 0.9em;
+    }
+    .slide--hero .slide__nr {
+      margin-bottom: 0.9rem;
+    }
+    .slide__figure {
+      order: -1;
+    }
+    .slide__figure img {
+      max-height: 32vh;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .carousel {
+      --track-h: calc(100svh - var(--header-h) - 170px);
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+      padding-top: 0.75rem;
+    }
+    .carousel__track {
+      min-height: 420px;
+    }
+    .slide__card {
+      border-radius: var(--radius);
+    }
+    .carousel__track {
+      border-radius: var(--radius);
+    }
+    .carousel__dot {
+      width: 32px;
+    }
+    .carousel__controls {
+      gap: 0.25rem;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .slide__card,
+    .slide__line,
+    .slide--hero .slide__logo,
+    .carousel__arrow:global(.hint) {
+      animation: none !important;
+    }
+    
+  }
+</style>

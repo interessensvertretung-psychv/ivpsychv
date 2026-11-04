@@ -1,0 +1,26 @@
+---
+import { getCollection, render } from 'astro:content';
+import PageLayout from '../layouts/PageLayout.astro';
+import ContactCard from '../components/ContactCard.astro';
+
+export async function getStaticPaths() {
+  const seiten = await getCollection('seiten', (s) => s.data.sichtbar);
+  return seiten.map((seite) => ({ params: { seite: seite.id }, props: { seite } }));
+}
+
+const { seite } = Astro.props;
+const { Content } = await render(seite);
+const istKrise = seite.id === 'hilfe-in-krisen';
+---
+
+<PageLayout
+  titel={seite.data.titel}
+  beschreibung={seite.data.beschreibung}
+  eyebrow={istKrise ? 'Wichtig' : undefined}
+  icon={istKrise ? 'lifebuoy' : 'ribbon'}
+>
+  <div class="prose">
+    <Content />
+  </div>
+  {seite.data.kontaktbox && <ContactCard text={seite.data.kontaktbox_text} />}
+</PageLayout>

@@ -1,0 +1,160 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { organisation, istPlatzhalter } from '../config/organisation';
+import { url, ohneKlammern } from '../lib/utils';
+
+const istVerein = organisation.rechtsform === 'verein';
+const hatPlatzhalter =
+  istPlatzhalter(organisation.verantwortlich.name) ||
+  istPlatzhalter(organisation.verantwortlich.strasse) ||
+  istPlatzhalter(organisation.verantwortlich.ort);
+---
+
+<PageLayout
+  titel="Impressum"
+  beschreibung="Angaben gemäß § 5 Digitale-Dienste-Gesetz (DDG) und § 18 Abs. 2 Medienstaatsvertrag (MStV)."
+  noindex
+>
+  {
+    hatPlatzhalter && (
+      <div class="placeholder-note" role="note">
+        <strong>Hinweis zur Fertigstellung:</strong>
+        <span>
+          Dieses Impressum enthält noch Platzhalter in eckigen Klammern […]. Bitte passe die Angaben in
+          <code>src/config/organisation.ts</code> an, bevor die Website öffentlich erreichbar ist.
+        </span>
+      </div>
+    )
+  }
+
+  <div class="prose">
+    {
+      !istVerein ? (
+        <>
+          <h2>Angaben gemäß § 5 DDG</h2>
+          <p>
+            <strong>{organisation.name}</strong>
+            <br />
+            <em>(Nicht eingetragene Patient*inneninitiative / Personenzusammenschluss)</em>
+          </p>
+          <p>
+            <strong>Verantwortlich:</strong>
+            <br />
+            {organisation.verantwortlich.name}
+            <br />
+            {organisation.verantwortlich.zusatz && (
+              <>
+                {organisation.verantwortlich.zusatz}
+                <br />
+              </>
+            )}
+            {organisation.verantwortlich.strasse}
+            <br />
+            {organisation.verantwortlich.ort}
+          </p>
+
+          <h2>Kontakt</h2>
+          <p>
+            E-Mail:{' '}
+            <a href={`mailto:${ohneKlammern(organisation.verantwortlich.email)}`}>
+              {organisation.verantwortlich.email}
+            </a>
+            {organisation.verantwortlich.telefon && (
+              <>
+                <br />
+                Telefon: {organisation.verantwortlich.telefon}
+              </>
+            )}
+          </p>
+
+          <h2>Redaktionell verantwortlich gemäß § 18 Abs. 2 MStV</h2>
+          <p>
+            {organisation.verantwortlich.name}
+            <br />
+            {organisation.verantwortlich.zusatz && (
+              <>
+                {organisation.verantwortlich.zusatz}
+                <br />
+              </>
+            )}
+            {organisation.verantwortlich.strasse}
+            <br />
+            {organisation.verantwortlich.ort}
+          </p>
+        </>
+      ) : (
+        <>
+          <h2>Angaben gemäß § 5 DDG</h2>
+          <p>
+            <strong>{organisation.verein.name}</strong>
+            <br />
+            {organisation.verein.strasse}
+            <br />
+            {organisation.verein.ort}
+          </p>
+          <p>
+            <strong>Vertreten durch den Vorstand:</strong>
+            <br />
+            {organisation.verein.vertretungsberechtigt.join(', ')}
+          </p>
+          <p>
+            <strong>Registereintrag:</strong>
+            <br />
+            Eingetragen im Vereinsregister.
+            <br />
+            Registergericht: {organisation.verein.registergericht}
+            <br />
+            Registernummer: {organisation.verein.registernummer}
+          </p>
+
+          <h2>Kontakt</h2>
+          <p>
+            E-Mail:{' '}
+            <a href={`mailto:${ohneKlammern(organisation.kontakt.email)}`}>{organisation.kontakt.email}</a>
+          </p>
+
+          <h2>Redaktionell verantwortlich gemäß § 18 Abs. 2 MStV</h2>
+          <p>
+            {organisation.verein.vertretungsberechtigt[0]}
+            <br />
+            {organisation.verein.strasse}
+            <br />
+            {organisation.verein.ort}
+          </p>
+        </>
+      )
+    }
+
+    <h2>EU-Streitschlichtung / Verbraucherstreitbeilegung</h2>
+    <p>
+      Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit. Wir
+      sind weder verpflichtet noch bereit, an Streitbeilegungsverfahren vor einer
+      Verbraucherschlichtungsstelle teilzunehmen.
+    </p>
+
+    <h2>Haftung für Inhalte</h2>
+    <p>
+      Als Diensteanbieter sind wir gemäß § 7 Abs. 1 DDG für eigene Inhalte auf diesen Seiten nach den
+      allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 DDG sind wir jedoch nicht verpflichtet,
+      übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu
+      forschen, die auf eine rechtswidrige Tätigkeit hinweisen. Verpflichtungen zur Entfernung oder
+      Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt.
+    </p>
+
+    <h2>Haftung für Links</h2>
+    <p>
+      Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss
+      haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die
+      Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten
+      verantwortlich.
+    </p>
+
+    <h2>Urheberrecht</h2>
+    <p>
+      Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem
+      deutschen Urheberrecht. Beiträge Dritter sind als solche gekennzeichnet.
+    </p>
+
+    <p><a href={url('/')}>← Zurück zur Startseite</a></p>
+  </div>
+</PageLayout>

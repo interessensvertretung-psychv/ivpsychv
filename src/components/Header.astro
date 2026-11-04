@@ -1,0 +1,167 @@
+---
+import Icon from './Icon.astro';
+import SocialLinks from './SocialLinks.astro';
+import { organisation } from '../config/organisation';
+import { url } from '../lib/utils';
+
+const [teil1, ...rest] = organisation.name.split(' ');
+---
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <div class="site-header__left">
+      <button
+        class="menu-toggle"
+        type="button"
+        id="menu-oeffnen"
+        aria-haspopup="dialog"
+        aria-controls="hauptmenue"
+        aria-expanded="false"
+      >
+        <Icon name="menu" size={26} />
+        <span class="menu-toggle__label">Menü</span>
+      </button>
+
+      <a class="brand" href={url('/')} aria-label={`${organisation.name} – zur Startseite`}>
+        <img
+          class="brand__logo"
+          src={url('/icon-192.png')}
+          alt=""
+          width="52"
+          height="52"
+          decoding="async"
+        />
+        <span class="brand__name">
+          <span class="brand__line1">{teil1}</span>
+          <span class="brand__line2">{rest.join(' ')}</span>
+        </span>
+      </a>
+    </div>
+
+    <div class="site-header__right">
+      <SocialLinks groesse={24} />
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    height: var(--header-h);
+    background: var(--flaeche);
+    border-bottom: 1px solid var(--linie);
+  }
+  .site-header__inner {
+    height: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 var(--page-pad);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(0.5rem, 2vw, 1.25rem);
+  }
+
+  .site-header__left {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.5rem, 2vw, 1.25rem);
+    min-width: 0;
+  }
+
+  .site-header__right {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .menu-toggle {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 48px;
+    min-width: 48px;
+    padding: 0.5rem 0.9rem 0.5rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid var(--linie-rose);
+    background: transparent;
+    color: var(--text);
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background-color 250ms var(--ease),
+      border-color 250ms var(--ease);
+  }
+  .menu-toggle:hover {
+    background: var(--flaeche-erhoeht);
+    border-color: var(--akzent);
+  }
+  .menu-toggle :global(.icon) {
+    color: var(--icon);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+    text-decoration: none;
+    color: var(--text);
+  }
+  .brand__logo {
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
+    transition: transform 500ms var(--ease);
+  }
+  .brand:hover .brand__logo {
+    transform: rotate(-8deg) scale(1.04);
+  }
+  .brand__name {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(1rem, 0.85rem + 0.7vw, 1.35rem);
+    line-height: 1.15;
+    letter-spacing: 0.005em;
+  }
+  .brand__line2 {
+    margin-left: 0.3em;
+  }
+
+  @media (max-width: 760px) {
+    .brand__name {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.95rem;
+    }
+    .brand__line1 {
+      font-size: 0.78em;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-leise);
+    }
+    .brand__line2 {
+      margin-left: 0;
+    }
+  }
+  @media (max-width: 640px) {
+    .brand__logo {
+      width: 42px;
+      height: 42px;
+    }
+    .menu-toggle__label {
+      display: none;
+    }
+    .menu-toggle {
+      padding: 0.5rem;
+      justify-content: center;
+    }
+  }
+</style>

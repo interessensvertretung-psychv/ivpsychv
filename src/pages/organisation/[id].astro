@@ -1,0 +1,20 @@
+---
+import { getCollection, render } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+import { url } from '../../lib/utils';
+
+export async function getStaticPaths() {
+  const seiten = await getCollection('organisation', (s) => s.data.sichtbar && s.id !== 'uebersicht');
+  return seiten.map((seite) => ({ params: { id: seite.id }, props: { seite } }));
+}
+
+const { seite } = Astro.props;
+const { Content } = await render(seite);
+---
+
+<PageLayout titel={seite.data.titel} beschreibung={seite.data.beschreibung} eyebrow="Organisation">
+  <div class="prose">
+    <Content />
+    <p><a href={url('/organisation/')}>← Zurück zur Übersicht</a></p>
+  </div>
+</PageLayout>

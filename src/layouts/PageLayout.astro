@@ -1,0 +1,29 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+
+interface Props {
+  titel: string;
+  beschreibung?: string;
+  eyebrow?: string;
+  icon?: string;
+  noindex?: boolean;
+}
+const { titel, beschreibung, eyebrow, icon = 'ribbon', noindex } = Astro.props;
+---
+
+<BaseLayout titel={titel} beschreibung={beschreibung} noindex={noindex}>
+  <article class="page">
+    {
+      eyebrow && (
+        <p class="page__eyebrow">
+          <Icon name={icon} size={18} />
+          {eyebrow}
+        </p>
+      )
+    }
+    <h1>{titel}</h1>
+    {beschreibung && <p class="page__lead">{beschreibung}</p>}
+    <slot />
+  </article>
+</BaseLayout>

@@ -1,0 +1,72 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { url, datumDE } from '../../lib/utils';
+
+const beitraege = (await getCollection('aktuelles', (b) => !b.data.entwurf)).sort(
+  (a, b) => b.data.datum.getTime() - a.data.datum.getTime(),
+);
+---
+
+<PageLayout titel="Aktuelles" beschreibung="Termine, Aktionen und Stellungnahmen der Initiative.">
+  {
+    beitraege.length === 0 ? (
+      <p>Derzeit gibt es keine Meldungen.</p>
+    ) : (
+      <ul class="news">
+        {beitraege.map((b) => (
+          <li>
+            <a class="news__item card" href={url(`/aktuelles/${b.id}/`)}>
+              <time datetime={b.data.datum.toISOString()} class="news__date">
+                <Icon name="calendar" size={16} />
+                {datumDE(b.data.datum)}
+              </time>
+              <h2>{b.data.titel}</h2>
+              <p>{b.data.zusammenfassung}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</PageLayout>
+
+<style>
+  .news {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+  }
+  .news__item {
+    display: block;
+    color: var(--text);
+    text-decoration: none;
+    transition:
+      border-color 250ms var(--ease),
+      transform 250ms var(--ease);
+  }
+  .news__item:hover {
+    border-color: var(--linie-rose);
+    transform: translateY(-3px);
+    color: var(--text);
+  }
+  .news__date {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: var(--fs-small);
+    color: var(--text-leise);
+    margin-bottom: 0.5rem;
+  }
+  .news__item h2 {
+    font-size: 1.4rem;
+    margin-bottom: 0.4em;
+  }
+  .news__item p {
+    margin: 0;
+    color: var(--text-leise);
+  }
+</style>

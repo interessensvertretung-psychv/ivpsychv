@@ -1,0 +1,56 @@
+---
+import Icon from './Icon.astro';
+import SocialLinks from './SocialLinks.astro';
+import { organisation } from '../config/organisation';
+import { kontaktMailto, ohneKlammern } from '../lib/utils';
+
+interface Props {
+  /** Eigener Text für die Box; ohne Angabe gilt der Standardtext */
+  text?: string;
+}
+
+const [mailName, mailDomain] = ohneKlammern(organisation.kontakt.email).split('@');
+const {
+  text = 'Nach deiner Kontaktaufnahme erhältst du Informationen zum Beitritt und Unterstützung bei den ersten Schritten.',
+} = Astro.props;
+---
+
+<aside class="contact card" aria-labelledby="kontakt-titel">
+  <h2 id="kontakt-titel" class="contact__title">Schreib uns</h2>
+  <p class="contact__text">{text}</p>
+  <div class="contact__actions">
+    <a class="btn btn--primary" href={kontaktMailto()}>
+      <Icon name="mail" size={20} />
+      <span>{mailName}@<wbr />{mailDomain}</span>
+    </a>
+    <SocialLinks mitText />
+  </div>
+</aside>
+
+<style>
+  .contact {
+    margin-top: 3rem;
+    border-color: var(--linie-rose);
+  }
+  .contact__title {
+    font-size: 1.5rem;
+    margin-bottom: 0.4em;
+  }
+  .contact__text {
+    color: var(--text-leise);
+  }
+  .contact__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+  }
+  /* lange E-Mail-Adresse: bleibt auf dem Handy lesbar, Umbruch nur nach dem @ */
+  .contact__actions .btn {
+    max-width: 100%;
+    font-size: clamp(0.875rem, 3.7vw, 1.0625rem);
+  }
+  .contact__actions .btn :global(.icon) {
+    flex-shrink: 0;
+  }
+</style>

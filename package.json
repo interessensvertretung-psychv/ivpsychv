@@ -1,0 +1,17 @@
+{
+  "name": "patienteninitiative-psychosoziale-versorgung",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "ASTRO_TELEMETRY_DISABLED=1 astro dev --host --port 4330",
+    "build": "ASTRO_TELEMETRY_DISABLED=1 astro build",
+    "preview": "ASTRO_TELEMETRY_DISABLED=1 astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@fontsource/jost": "^5.3.0",
+    "@fontsource/lexend": "^5.3.0",
+    "astro": "^7.4.2"
+  }
+}
