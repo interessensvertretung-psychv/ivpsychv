@@ -37,9 +37,9 @@ jobs:
 
       - name: Build with Astro
         env:
-          # Wenn keine Custom-Domain genutzt wird: SITE_URL und BASE_PATH anpassen
-          SITE_URL: ${{ steps.pages.outputs.origin }}
-          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          # Feste Adresse der Website; ohne eigene Domain hier die github.io-Adresse und BASE_PATH setzen
+          SITE_URL: https://www.interessensvertretung-psychv.de
+          BASE_PATH: /
         run: npm run build
 
       - name: Upload artifact
