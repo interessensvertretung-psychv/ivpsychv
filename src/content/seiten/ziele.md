@@ -11,7 +11,7 @@ Dafür bündeln wir unsere Stimmen, formulieren gemeinsame Forderungen und bring
 
 ## Unsere Forderungen
 
-In Bezug auf die psychotherapeutische Versorgung:
+Psychotherapeutische Versorgung:
 
 - *Vollständige extrabudgetäre Vergütung medizinisch notwendiger Psychotherapie, unabhängig vom Vermittlungsweg*
 - *Gesicherte und rechtzeitig zugängliche Anschlussversorgung ohne vermeidbare Behandlungsunterbrechungen oder Verzögerungen.*
@@ -19,9 +19,31 @@ In Bezug auf die psychotherapeutische Versorgung:
 - *Selbstbestimmte Therapeutenwahl.*
 - *Behandlungsumfang nach individuellem Bedarf.*
 - *Verbindliche Beteiligung von Betroffenen an der Ausgestaltung der Versorgung.*
-- *Eine wissenschaftlich fundierte und regelmäßig evaluierte Bedarfsermittlung für Kinder, Jugendliche und Erwachsene. An ihr müssen sich die Planung und Finanzierung der psychotherapeutischen Versorgung orientieren.*
-- *Prüfung der Folgen für Praxen, insbesondere mit halbem Versorgungsauftrag, und wirksame Schutzmaßnahmen. Dazu gehören bedarfsgerechte Übergangs- und Härtefallregelungen.*
 
 
+Übergang von stationärer zu ambulanter Versorgung:
 
+- *Sicherstellung einer ambulanten Folgebehandlung nach stationärem psychiatrischen Krankenhausaufenthalt.*
+- *Umsetzung des § 39 Absatz 1a SGB V (Rahmenvertrag Entlassmanagement), wobei die Auslegung der Begriffe wie "frühzeitig" und "rechtzeitig" nicht im Ermessen eines Krankenhauses liegen darf.*
+- *Engmaschige Begleitung durch einen Sozialpsychiatrischen Dienst bei fehlender sofortiger psychiatrischer oder psychotherapeutischer Anschlussbehandlung.* 
+
+
+Komplexversorgung (KSVPsych-Richtlinie):
+
+- *Umsetzung der Richtlinie des Gemeinsamen Bundesausschusses (GBA) zur berufsgruppenübergreifenden, koordinierten und strukturierten Versorgung (KSVPsych-RL) für schwere psychische Erkrankungen.*
+- *Zu diesem Zweck: flächendeckendes Angebot von Netzverbünden.*
+- *Außerdem: Zugang zur Komplexversorgung insbesondere nach stationärer Krankenhaus- oder Rehabilitationsbehandlung erleichtern.*
+
+
+Soziotherapie:
+
+- *Inanspruchnahme der Soziotherapie nach § 37a SGB V flächendeckend ermöglichen.*
+
+
+Ambulante psychiatrische Pflege (APP):
+
+- *Bei Vorliegen eines Pflegegrades aufgrund von psychischer Erkrankung muss es Patient:innen möglich sein, psychiatrische Pflegeleistungen in Anspruch zu nehmen.*
+- *Ausbau der APP und Integration in einen Gesamtbehandlungsplan nach KSVPsych-RL.*
+- *Die "Verordnung häuslicher Krankenpflege" bei psychischen Erkrankungen darf nicht aufgrund des Fehlens eines entsprechenden Pflegedienstes scheitern.*
+- *Zuständigkeiten der Krankenkasse und Pflegekasse sind bei Patient:innen mit psychischer Erkrankung und Pflegegrad in der Praxis besser zu klären.*
 
